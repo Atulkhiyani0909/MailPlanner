@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email</title>
+    <style>
+        /* Enhanced loader styles with box shadow and more */
+      
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e6e6e6; /* Light grey background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #form-container {
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 30px;
+            background-color: #f9f9f9; /* Light grey form background */
+        }
+
+        #form-container h1 {
+            margin: 0 0 20px 0;
+            font-size: 24px;
+            text-align: center;
+            color: #007bff; /* Blue text color */
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #007bff; /* Blue border on focus */
+            outline: none;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        button {
+            background-color: #007bff; /* Blue button */
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="form-container">
+        <h1>Send an Email</h1>
+        <form id="email-form" action="/mail" method="post">
+            <label for="to">To:</label>
+            <input type="email" id="to" name="to" required><br><br>
+            
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required><br><br>
+            
+            <label for="body">Body:</label>
+            <textarea id="body" name="body" required></textarea><br><br>
+
+            <label for="sendingDate">Sending Date</label>
+            <input type="datetime-local"  id="sendingDate" name="sendingDate" required></input><br><br>
+            
+            <button type="submit">Send Email</button>
+        </form>
+    </div>
+</body>
+
+</html>
