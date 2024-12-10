@@ -20,6 +20,12 @@ const emailSchema = new mongoose.Schema({
         trim: true,
         match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], // Validates email format
     },
+    Subject: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: [1, 'Message cannot be empty'], // Ensures a non-empty message
+    },
     message: {
         type: String,
         required: true,
@@ -27,18 +33,17 @@ const emailSchema = new mongoose.Schema({
         minlength: [1, 'Message cannot be empty'], // Ensures a non-empty message
     },
     dateCreated: {
-        type: String,
-        default: new Date().toLocaleString("en-TN", { timeZone: "Asia/Kolkata" }) , // Automatically sets the current date/time
+        type:Date,
+        default:Date.now, // Automatically sets the current date/time
     },
     sendingTime: {
-        type: String,
+        type: Date,
         required: true, // Ensures the sending time is provided
-        // validate: {
-        //     validator: function (value) {
-        //         return value > new Date(); // Ensures the sending time is in the future
-        //     },
-       //     message: 'Sending time must be in the future',
-       // },
+      
+    },
+    isSent: {
+        type: Boolean,
+        default: false, // Initially set to false when not sent
     },
 });
 
