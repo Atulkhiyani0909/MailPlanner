@@ -33,4 +33,4 @@ This is a web-based **Email Scheduling and Tracking System** that enables users 
 
 1. **Clone this repository**:
    ```bash
-   
+   https://github.com/Atulkhiyani0909/MailPlanner.git
