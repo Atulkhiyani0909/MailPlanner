@@ -36,6 +36,12 @@ const userSchema=new mongoose.Schema({
       },
     }
   ],
+  sendmailID:[
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'email',
+    }
+  ]
 
 })
 

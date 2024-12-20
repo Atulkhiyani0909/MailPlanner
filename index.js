@@ -22,6 +22,7 @@ let port = 3000;
 app.use(cookieParser("MailPlanner"));
 
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 //to read the data of the frontend 
 app.use(express.json());
@@ -48,6 +49,58 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+app.get('/signup',(req,res)=>{
+   res.render('user/signup');
+});
+
+app.post('/signup', async (req, res) => {
+  try {
+    // Check if the email already exists in the database
+    let check = await User.findOne({ 'credentials.email': req.body.email });
+
+    if (!check) {
+      // Destructure data from req.body
+      let { name, pass, email, emailpassword } = req.body;
+
+      // Hash the password with bcrypt
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(pass, salt);
+
+      // Create the new user
+      let user = await User.create({
+        user: name,
+        credentials: [
+          {
+            email: email,
+            password: emailpassword,
+          },
+        ],
+        accountPassword: hashedPassword,
+      });
+
+      // Create a JWT token
+      let token = jwt.sign({ email: email, userid: user._id }, process.env.SECRET);
+
+      // Set the token as a cookie
+      res.cookie("token", token, {
+        httpOnly: true, // Protect cookie from being accessed by client-side scripts
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
+      });
+
+      // Redirect to the login page after successful signup
+      return res.redirect("/login");
+    }
+    // If email already exists, send an error message
+    res.status(400).json({ message: 'Email already exists' });
+
+  } catch (err) {
+    // Handle any errors (e.g., database issues, bcrypt errors)
+    console.error("Error during signup:", err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // Function to send an email
 const sendEmail = async (email) => {
@@ -153,6 +206,8 @@ app.get('/delivered', async (req, res) => {
   });
   res.render('email/pending.ejs', { allmails });
 });
+
+
 
 // Server setup
 app.listen(port, () => {
