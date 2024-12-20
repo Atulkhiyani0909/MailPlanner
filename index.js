@@ -8,28 +8,32 @@ const cron = require('node-cron');
 const ejsMate = require('ejs-mate');
 const method = require('method-override');
 const path = require('path');
-const flash = require('connect-flash');
-const session = require('express-session');
 const schedule=require('node-schedule');
+const cookieParser = require('cookie-parser');
+const session=require("express-session");
 
 const app = express();
 let port = 3000;
 
-// Session configuration
+
 const sessionOptions = {
-  secret: process.env.SECRET,
+  secret: "MailPlanner", // This is for session middleware, not for cookie-parser
   resave: false,
   saveUninitialized: true,
-  cookie: {
-    expires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
+
+  cookie:{
+    expiryDate:Date.now()+7*24*60*60*1000,
+    maxAge:7*60*60*1000,
+    httponly:true  //to keep save accross cross scripting
   }
 };
 
-app.use(session(sessionOptions));
-app.use(flash());
+// Use the secret string directly for cookie-parser
+app.use(cookieParser("MailPlanner"));
 
+app.use(session(sessionOptions));
+
+//to read the data of the frontend 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -43,11 +47,7 @@ app.engine('ejs', ejsMate);
 app.use('/css', express.static(path.join(__dirname, 'public/css')));
 app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
-app.use((req, res, next) => {
-  res.locals.successMsg = req.flash('success');
-  res.locals.errorMsg = req.flash('error');
-  next();
-});
+
 
 // Connect to MongoDB
 main().then(() => {
@@ -114,7 +114,6 @@ cron.schedule('* * * * *', async () => {
 
 // Render index page
 app.get('/', async (req, res) => {
-  req.flash('success', 'Mail Created Successfully');
   res.render('email/index.ejs');
 });
 
@@ -160,19 +159,19 @@ app.get('/mail/:id', async (req, res) => {
 // Show pending emails
 app.get('/pending', async (req, res) => {
   const currentDate = Date(); // Get the current date
-  const allMails = await Email.find({
+  const allmails = await Email.find({
     sendingTime: { $gt: currentDate },
   });
-  res.render('email/pending.ejs', { allMails });
+  res.render('email/pending.ejs', { allmails });
 });
 
 // Show delivered emails
 app.get('/delivered', async (req, res) => {
   const currentDate = Date(); // Get the current date
-  const allMails = await Email.find({
+  const allmails = await Email.find({
     sendingTime: { $lt: currentDate },
   });
-  res.render('email/pending.ejs', { allMails });
+  res.render('email/pending.ejs', { allmails });
 });
 
 // Server setup
