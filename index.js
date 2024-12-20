@@ -2,36 +2,26 @@ require('dotenv').config();
 
 const express = require('express');
 const nodemailer = require('nodemailer');
-const mongoose = require('mongoose');
-const Email = require('./schema.js'); // Your Mongoose email schema
-const cron = require('node-cron');
+const Email = require('./models/email.js'); // Your Mongoose email schema
+const cron = require('node-cron'); //to schedule process in fixed interval
 const ejsMate = require('ejs-mate');
 const method = require('method-override');
 const path = require('path');
 const schedule=require('node-schedule');
 const cookieParser = require('cookie-parser');
-const session=require("express-session");
+const jwt=require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const User=require('./models/user.js');
 
 const app = express();
 let port = 3000;
 
 
-const sessionOptions = {
-  secret: "MailPlanner", // This is for session middleware, not for cookie-parser
-  resave: false,
-  saveUninitialized: true,
-
-  cookie:{
-    expiryDate:Date.now()+7*24*60*60*1000,
-    maxAge:7*60*60*1000,
-    httponly:true  //to keep save accross cross scripting
-  }
-};
 
 // Use the secret string directly for cookie-parser
 app.use(cookieParser("MailPlanner"));
 
-app.use(session(sessionOptions));
+
 
 //to read the data of the frontend 
 app.use(express.json());
@@ -49,16 +39,6 @@ app.use('/js', express.static(path.join(__dirname, 'public/js')));
 
 
 
-// Connect to MongoDB
-main().then(() => {
-  console.log('Connection Success');
-}).catch((err) => {
-  console.log('Error Occurred:', err);
-});
-
-async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/email-connect');
-}
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
