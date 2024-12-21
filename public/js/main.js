@@ -1,5 +1,4 @@
 
-
 function toggleAIBox() {
     const aiBox = document.getElementById("ai-box");
     if (aiBox.style.display === "none" || aiBox.style.display === "") {

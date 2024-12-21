@@ -61,11 +61,10 @@ app.post('/generate-ai', async (req, res) => {
   try {
       const { topic } = req.body;
       // Generate AI content
-      const response = await model.generateContent(topic +"only solve the question which contains the email only in 160 words with proper subject ,body don't give any answer not more than 160 words always less than or equal to it");
+      const response = await model.generateContent(topic +" only solve the question which contains the email only in 160 words with proper subject ,body don't give any answer not more than 160 words always less than or equal to it");
       // Sending the AI-generated content back to the client
       const generatedText = response.response.text();
       return res.status(200).json({ generatedText });
-
   } catch (error) {
       return res.status(500).json({ error: 'Internal server error' });
   }
@@ -204,33 +203,36 @@ cron.schedule('* * * * *', async () => {
 // Routes
 
 // Render index page
-app.get('/', async (req, res) => {
+app.get('/',isLoggedIn,async (req, res) => {
   res.render('email/index.ejs');
 });
 
 // Show email history
-app.get('/history', async (req, res) => {
+app.get('/history',isLoggedIn,async (req, res) => {
   const allmails = await Email.find({});
   res.render('email/History.ejs', { allmails });
 });
 
 // Save email and schedule sending
-app.post('/mail', isLoggedIn,(req, res) => {
+app.post('/mail', isLoggedIn,async (req, res) => {
   const { to, subject, body, sendingDate } = req.body;
-
+ let person=await User.findById(req.user.userid);
+ console.log(person);
   const data = {
-    // user: ,
-    // from: ,
+    userID:person._id,
+     user:person.user,
+     from:person.credentials[0].email,
     to: to,
     Subject: subject,
     message: body,
     sendingTime: sendingDate
   };
 
+
   // Save data to database
-  Email.create(data).then((data) => {
-    console.log('Data saved:', data);
-  });
+  let result=await Email.create(data);
+person.sendmailID.push(result._id);
+person.save();
 
   // Schedule the email to be sent at the specified time
   const scheduledDate = new Date(sendingDate);
@@ -241,14 +243,14 @@ app.post('/mail', isLoggedIn,(req, res) => {
 });
 
 // Show individual email details
-app.get('/mail/:id', async (req, res) => {
+app.get('/mail/:id',isLoggedIn,async (req, res) => {
   const { id } = req.params;
   const mail = await Email.findById(id);
-  res.render('email/showmail.ejs', { mail });
+  res.render('email/showemail.ejs',{mail});
 });
 
 // Show pending emails
-app.get('/pending', async (req, res) => {
+app.get('/pending', isLoggedIn,async (req, res) => {
   const currentDate = Date(); // Get the current date
   const allmails = await Email.find({
     sendingTime: { $gt: currentDate },
@@ -257,7 +259,7 @@ app.get('/pending', async (req, res) => {
 });
 
 // Show delivered emails
-app.get('/delivered', async (req, res) => {
+app.get('/delivered', isLoggedIn,async (req, res) => {
   const currentDate = Date(); // Get the current date
   const allmails = await Email.find({
     sendingTime: { $lt: currentDate },

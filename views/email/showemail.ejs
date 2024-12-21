@@ -1,0 +1,163 @@
+<%layout("/layout/boilerplate")%>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .email-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .email-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-info {
+            width: 100%;
+            padding-bottom: 15px;
+        }
+
+        .email-info p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .email-info p strong {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .email-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .time-difference {
+            color: #28a745;
+            font-size: 14px;
+        }
+
+        .email-body {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Email</h1>
+    <div class="container">
+
+        <h2>Email Information</h2>
+        
+        <!-- Email Card Example -->
+        <div class="email-card">
+            <div class="email-info">
+                <p><strong>From:</strong> <%=mail.from%></p>
+                <p><strong>To:</strong> <%=mail.to%></p>
+                <p><strong>Sending Date:</strong> <span id="sending-date"><%=mail.sendingTime%></span></p>
+                <p><strong>Created Date:</strong> <span id="created-date"><%=mail.dateCreated%></span></p>
+                <p class="time-difference" id="time-difference"></p>
+            </div>
+            
+            <!-- Email Body Section -->
+            <div class="email-body">
+                <p><strong>Subject:</strong> <%=mail.Subject%></p>
+                <p><%=mail.message%></p>
+            </div>
+
+            <div class="email-actions">
+                <button class="btn btn-edit">Edit</button>
+                <button class="btn btn-delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to calculate and display time difference
+        function calculateTimeDifference() {
+            const sendingDate = new Date(document.getElementById("sending-date").textContent);
+            const createdDate = new Date();
+
+            const diffTime = Math.abs(sendingDate - createdDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+            let timeDifferenceText = "";
+            if (diffDays > 0) {
+                timeDifferenceText += `${diffDays} day(s) `;
+            }
+            if (diffHours > 0 || diffDays > 0) {
+                timeDifferenceText += `${diffHours} hour(s) `;
+            }
+            timeDifferenceText += `${diffMinutes} minute(s)`;
+
+            document.getElementById("time-difference").textContent = `Time Remaining: ${timeDifferenceText}`;
+        }
+
+        // Call the function on page load
+        calculateTimeDifference();
+    </script>
+</body>
+</html>
