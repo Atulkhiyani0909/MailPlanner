@@ -101,6 +101,36 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+app.get('/login',(req, res) => {
+  res.render('user/login');
+});
+
+
+app.post('/login', async (req, res) => {
+  let {email,pass}=req.body;
+    let user=await User.findOne({ 'credentials.email': email });
+    
+    
+    if(user){
+         bcrypt.compare(pass,user.accountPassword, function(err, result) {
+                console.log(result);//boolean output
+                if(result){
+                  let token=jwt.sign({email:user.credentials.email,userid:user._id},process.env.SECRET);
+                  res.cookie("token", token, {
+                    httpOnly: true,       // Protect cookie from being accessed by client-side scripts
+                    maxAge: 7 * 24 * 60 * 60 * 1000 // Cookie expires in 7 days
+                });
+                   res.redirect("/profile");
+                }
+                else{
+                 res.redirect("/login");
+                }
+             });
+    }else{
+       res.redirect("/signup");
+    }
+});
+
 
 
 // Function to send an email
@@ -209,10 +239,15 @@ app.get('/delivered', async (req, res) => {
 });
 
 
+
+
+
 app.get("/logout",(req,res)=>{
   res.cookie('token',"");
   res.redirect('/login');
-})
+});
+
+
 // Server setup
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

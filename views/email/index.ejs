@@ -41,7 +41,6 @@
 
     textarea {
         height: 100px;
-        resize: none;
     }
 
     button {
@@ -57,7 +56,7 @@
         background-color: #0056b3; /* Darker blue on hover */
     }
 </style>
-    <div id="form-container" style="margin: auto; margin-top: 15px; width: 720px;">
+    <div id="form-container" style="margin: auto; margin-top: 70px; width: 750px;">
         <h1>Send an Email</h1>
         <form id="email-form" action="/mail" method="post">
             <label for="to">To:</label>
@@ -67,7 +66,7 @@
             <input type="text" id="subject" name="subject" required><br><br>
             
             <label for="body">Body:</label>
-            <textarea id="body" name="body" required></textarea><br><br>
+            <textarea id="body" name="body"  required></textarea><br><br>
 
             <label for="sendingDate">Sending Date</label>
             <input type="datetime-local"  id="sendingDate" name="sendingDate" required></input><br><br>
