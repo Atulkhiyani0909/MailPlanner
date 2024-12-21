@@ -1,0 +1,48 @@
+<%layout("/layout/boilerplate")%>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="profile-container">
+    <div class="profile-image">
+      <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" alt="Profile Image">
+    </div>
+    <div class="profile-details">
+      <div>
+        <h1><%=user.user%></h1>
+        <p><span class="detail-label">All Email's </span></p>
+        <%for(i=0;i<user.credentials.length;i++){%>
+          <div id="container-mail" style="display: flex; justify-content: space-around;">
+          <p><span class="detail-label" style="color: black;"><%=[i+1] %> :</span> <%=user.credentials[i].email%></p>
+            <div class="password-container" style="width: 300px; height: 50px;">
+              <div class="hidden-password" id="hidden-section" style="display:none;">
+                <p><%=user.credentials[i].password%></p>
+              </div>
+              <button class="view-btn" id="show-btn">View password</button>
+            </div>
+          </p>
+        </div>
+          <%}%>
+        
+        <p><span class="detail-label">Username:</span> @<%=user.user.toLowerCase()%></p>
+        <p><span class="detail-label">Total Emails Sent:</span> <%=count.length%></p>
+      </div>
+    
+    </div>
+  </div>
+
+  <script>
+      const button = document.getElementById('show-btn');
+    const hiddenSection = document.getElementById('hidden-section');
+
+    button.addEventListener('click', () => {
+      if (hiddenSection.style.display === 'none' || hiddenSection.style.display === '') {
+        hiddenSection.style.display = 'block'; // Make it visible
+        button.textContent = 'Hide Password';  // Update button text
+      } else {
+        hiddenSection.style.display = 'none'; // Hide it again
+        button.textContent = 'Show Password';  // Update button text
+      }
+    });
+  </script>
+</body>
+</html>

@@ -13,6 +13,12 @@ const jwt=require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User=require('./models/user.js');
 
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+
 const app = express();
 let port = 3000;
 
@@ -50,6 +56,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+//gemini 
+app.post('/generate-ai', async (req, res) => {
+  try {
+      const { topic } = req.body;
+      // Generate AI content
+      const response = await model.generateContent(topic +"only solve the question which contains the email only in 160 words with proper subject ,body don't give any answer not more than 160 words always less than or equal to it");
+      // Sending the AI-generated content back to the client
+      const generatedText = response.response.text();
+      return res.status(200).json({ generatedText });
+
+  } catch (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 app.get('/signup',(req,res)=>{
    res.render('user/signup');
 });
@@ -80,7 +102,7 @@ app.post('/signup', async (req, res) => {
       });
 
       // Create a JWT token
-      let token = jwt.sign({ email: email, userid: user._id }, process.env.SECRET);
+      let token = jwt.sign({ email: user.credentials.email, userid: user._id }, process.env.SECRET);
 
       // Set the token as a cookie
       res.cookie("token", token, {
@@ -131,7 +153,12 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
+app.get('/profile',isLoggedIn,async (req, res) =>{
+   let user =await User.findById(req.user.userid);
+   let count=await Email.find({userID:user._id});
+   console.log(count);
+     res.render('user/profile',{user,count});
+});
 
 // Function to send an email
 const sendEmail = async (email) => {
@@ -188,12 +215,12 @@ app.get('/history', async (req, res) => {
 });
 
 // Save email and schedule sending
-app.post('/mail', (req, res) => {
+app.post('/mail', isLoggedIn,(req, res) => {
   const { to, subject, body, sendingDate } = req.body;
 
   const data = {
-    user: 'Ak@gmail.com',
-    from: 'Ak@gmail.com',
+    // user: ,
+    // from: ,
     to: to,
     Subject: subject,
     message: body,
@@ -240,12 +267,21 @@ app.get('/delivered', async (req, res) => {
 
 
 
-
-
 app.get("/logout",(req,res)=>{
   res.cookie('token',"");
   res.redirect('/login');
 });
+
+
+function isLoggedIn(req, res,next){
+  if(req.cookies.token=="") res.redirect("/login");
+  else{
+     let data =jwt.verify(req.cookies.token,process.env.SECRET);
+     req.user=data;
+     next();
+  }
+}
+
 
 
 // Server setup
