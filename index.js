@@ -102,6 +102,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
+
 // Function to send an email
 const sendEmail = async (email) => {
   try {
@@ -208,7 +209,10 @@ app.get('/delivered', async (req, res) => {
 });
 
 
-
+app.get("/logout",(req,res)=>{
+  res.cookie('token',"");
+  res.redirect('/login');
+})
 // Server setup
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
