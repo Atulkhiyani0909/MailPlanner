@@ -21,8 +21,7 @@ const userSchema=new mongoose.Schema({
     type:String,
     required:true,
    },
-   credentials: [          //have emails with there own password
-    {
+             //have emails with there own password
       email: {
         type: String,
         required: true,
@@ -34,8 +33,7 @@ const userSchema=new mongoose.Schema({
         required: true,
         trim: true,
       },
-    }
-  ],
+    
   sendmailID:[
     {
       type: mongoose.Schema.Types.ObjectId,

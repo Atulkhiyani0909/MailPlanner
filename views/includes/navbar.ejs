@@ -1,6 +1,6 @@
 <nav class="navbar bg-primary navbar-expand-lg fixed-top" data-bs-theme="dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">MailPlanner</a>
+      <a class="navbar-brand" href="/">MailPlanner</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -10,7 +10,7 @@
             <a class="nav-link active" aria-current="page" href="/history">History</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="/">Send Mail</a>
+            <a class="nav-link active" href="/sendmail">Send Mail</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/pending">Pending Mail's</a>
@@ -20,22 +20,31 @@
           </li>
         </ul>
         <span class="navbar-text">
-          <a href="/logout"  style="text-decoration: none; margin-right: 20px;">
-            <i class="fa-solid fa-person-walking-arrow-loop-left"></i>
-            Logout
+          <%if(currUserID){%>
+            <a href="/logout"  style="text-decoration: none; margin-right: 20px;">
+              <i class="fa-solid fa-person-walking-arrow-loop-left"></i>
+              Logout
+            </a>
+          <%}%>
+         
+          <%if(!currUserID){%>
+            <a href="/signup"  style="text-decoration: none; margin-right: 20px;">
+              <i class="fa-solid fa-user-plus"></i>
+              Sign Up
           </a>
-          <a href="/signup"  style="text-decoration: none; margin-right: 20px;">
-            <i class="fa-solid fa-user-plus"></i>
-            Sign Up
-        </a>
+
           <a href="/login"  style="text-decoration: none; margin-right: 20px;">
             <i class="fa-solid fa-right-from-bracket"></i>
             Login
           </a>
-            <a href="/profile"  style="text-decoration: none; margin-right: 20px;">
-                <i class="fa-regular fa-user"></i>
-                Profile
-            </a>
+          <%}%>
+        
+
+        <a href="/profile"  style="text-decoration: none; margin-right: 20px;">
+          <i class="fa-regular fa-user"></i>
+          Profile
+      </a>
+
         </span>
       </div>
     </div>

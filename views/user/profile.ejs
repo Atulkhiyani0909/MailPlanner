@@ -10,18 +10,18 @@
       <div>
         <h1><%=user.user%></h1>
         <p><span class="detail-label">All Email's </span></p>
-        <%for(i=0;i<user.credentials.length;i++){%>
+        
           <div id="container-mail" style="display: flex; justify-content: space-around;">
-          <p><span class="detail-label" style="color: black;"><%=[i+1] %> :</span> <%=user.credentials[i].email%></p>
+          <p><span class="detail-label" style="color: black;"></span> <%=user.email%></p>
             <div class="password-container" style="width: 300px; height: 50px;">
               <div class="hidden-password" id="hidden-section" style="display:none;">
-                <p><%=user.credentials[i].password%></p>
+                <p><%=user.password%></p>
               </div>
               <button class="view-btn" id="show-btn">View password</button>
             </div>
           </p>
         </div>
-          <%}%>
+          
         
         <p><span class="detail-label">Username:</span> @<%=user.user.toLowerCase()%></p>
         <p><span class="detail-label">Total Emails Sent:</span> <%=count.length%></p>

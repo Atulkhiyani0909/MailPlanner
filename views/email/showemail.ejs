@@ -127,19 +127,35 @@
             </div>
 
             <div class="email-actions">
-                <button class="btn btn-edit">Edit</button>
-                <button class="btn btn-delete">Delete</button>
+                <a href="/mail/edit/<%=mail._id%>" class="btn btn-edit" >Edit</a>
+                <form action="/mail/delete/<%=mail._id%>?_method=Delete" method="post">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
             </div>
         </div>
     </div>
 
-    <script>
         // Function to calculate and display time difference
-        function calculateTimeDifference() {
-            const sendingDate = new Date(document.getElementById("sending-date").textContent);
-            const createdDate = new Date();
+        <script>
+        function calculateTimeDifference(sendingTime) {
+            // Parse sendingTime as a Date object
+            const sendingDate = new Date(sendingTime);
+            if (isNaN(sendingDate)) {
+                console.error("Invalid sendingTime:", sendingTime);
+                document.getElementById("time-difference").textContent = "Invalid sending time.";
+                return;
+            }
 
-            const diffTime = Math.abs(sendingDate - createdDate);
+            const createdDate = new Date(); // Current time
+            console.log("Created Date:", createdDate);
+            console.log("Sending Date:", sendingDate);
+
+            const diffTime = sendingDate - createdDate; // Difference in milliseconds
+            if (diffTime < 0) {
+                document.getElementById("time-difference").textContent = "Time has already passed.";
+                return;
+            }
+
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const diffMinutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
@@ -156,8 +172,8 @@
             document.getElementById("time-difference").textContent = `Time Remaining: ${timeDifferenceText}`;
         }
 
-        // Call the function on page load
-        calculateTimeDifference();
+        // Call the function with a dynamically injected time
+        calculateTimeDifference("<%= mail.sendingTime %>");
     </script>
 </body>
 </html>
