@@ -1,313 +1,63 @@
 <%layout("/layout/boilerplate")%>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<style>
-    @keyframes glow {
-        0% {
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        }
-        50% {
-            box-shadow: 0 0 20px rgba(0, 123, 255, 0.8);
-        }
-        100% {
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        }
-    }
+<link rel="stylesheet" href="css/send.css">
+<h1>send</h1>
+<div id="form-container" class="container mt-5">
+    <div class="card shadow-lg mx-auto" style="max-width: 900px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h1 class="h4 mb-0">Send an Email</h1>
+        </div>
+        <div class="card-body">
+            <form id="email-form" action="/mail" method="post">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="to" class="form-label">To:</label>
+                        <input type="email" id="to" name="to" class="form-control" required placeholder="Enter recipient's email">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="subject" class="form-label">Subject:</label>
+                        <input type="text" id="subject" name="subject" class="form-control" required placeholder="Enter email subject">
+                    </div>
+                </div>
 
-    @keyframes circle-glow {
-        0% {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 123, 255, 0.7); /* Blue glow */
-        }
-        50% {
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 123, 255, 1); /* Stronger blue glow */
-        }
-        100% {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 123, 255, 0.7);
-        }
-    }
+                <div class="mb-3">
+                    <label for="body" class="form-label">Body:</label>
+                    <textarea id="body" name="body" class="form-control" rows="5" required placeholder="Enter your message"></textarea>
+                </div>
 
-    #form-container {
-        width: 400px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        padding: 30px;
-        background-color: #f9f9f9; /* Light grey form background */
-    }
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="sendingDate" class="form-label">Sending Date:</label>
+                        <input type="datetime-local" id="sendingDate" name="sendingDate" class="form-control" required>
+                    </div>
+                </div>
 
-    #form-container h1 {
-        margin: 0 0 20px 0;
-        font-size: 24px;
-        text-align: center;
-        color: #007bff; /* Blue text color */
-    }
-
-    label {
-        display: block;
-        font-weight: bold;
-        margin-bottom: 5px;
-        color: #333;
-    }
-
-    input, textarea, button {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-
-    input:focus, textarea:focus {
-        border-color: #007bff; /* Blue border on focus */
-        outline: none;
-    }
-
-    textarea {
-        height: 100px;
-    }
-
-    button {
-        background-color: #007bff; /* Blue button */
-        color: white;
-        border: none;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-   /* Styling for the message box above the AI button */
-/* Styling for the generated message box */
-.generated {
-    display: none; /* Initially hidden */
-    position: fixed;
-    bottom: 80px; /* Position it above the AI button */
-    right: 20px;  /* Align to the right */
-    width: 300px;
-    padding: 15px;
-    background-color: #28a745; /* Default success background color */
-    color: white;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    font-size: 16px;
-    text-align: center;
-    z-index: 1000;
-    transition: opacity 0.3s ease-in-out;
-    max-height: 150px; /* Prevents the message box from getting too tall */
-    overflow: auto;  /* Allows scrolling if the message is too long */
-    padding-bottom: 10px;
-}
-
-.generated.error {
-    background-color: #dc3545; /* Red background for error */
-}
-
-.generated.success {
-    background-color: #28a745; /* Green background for success */
-}
-
-.generated h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-}
-
-.generated p {
-    margin-top: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    line-height: normal;
-    color: white;
-}
-
-@keyframes glow {
-    0% {
-        color: #ffffff; /* White */
-        text-shadow: 
-            0 0 5px #ffffff, 
-            0 0 10px #ffffff, 
-            0 0 20px #4caf50, /* Green glow */
-            0 0 30px #4caf50, 
-            0 0 40px #4caf50, 
-            0 0 50px #4caf50, 
-            0 0 60px #4caf50;
-    }
-    100% {
-        color: #4caf50; /* Green */
-        text-shadow: 
-            0 0 5px #4caf50, 
-            0 0 10px #4caf50, 
-            0 0 20px #ffffff, /* White glow */
-            0 0 30px #ffffff, 
-            0 0 40px #ffffff, 
-            0 0 50px #ffffff, 
-            0 0 60px #ffffff;
-    }
-}
-
-#ai-circle {
-    font-family: 'Cursive', sans-serif;
-    color: #ffffff;
-    text-align: center;
-    animation: glow 1.5s ease-in-out infinite alternate;
-
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: #1a1a1a; /* Dark Gray */
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 
-        0 0 10px rgba(0, 0, 0, 0.3), 
-        0 0 20px rgba(76, 175, 80, 0.7); /* Green glow */
-    z-index: 1000;
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-#ai-circle:hover {
-    background-color: #2c2c2c; /* Slightly lighter gray */
-    transform: scale(1.1); /* Slightly larger on hover */
-    box-shadow: 
-        0 0 15px rgba(76, 175, 80, 0.8), 
-        0 0 30px rgba(76, 175, 80, 0.9); /* Enhanced green glow */
-}
-
-    #ai-box {
-        
-        position: fixed;
-        bottom: 80px;
-        right: 20px;
-        width: 400px;
-        height: 200px;
-        padding: 25px;
-        background-color: #f9f9f9;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        display: none; /* Initially hidden */
-        z-index: 1000;
-    }
-
-    #ai-box h2 {
-        margin: 0 0 10px;
-        font-size: 16px;
-        color: #007bff;
-        text-align: center;
-    }
-
-    #ai-box input, #ai-box button {
-        width: 100%;
-        margin-bottom: 10px;
-        padding: 10px;
-        font-size: 14px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-    }
-
-    #ai-box button {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    #ai-box button:hover {
-        background-color: #218838;
-    }
-    #loader {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
-    color: #ffffff;
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    text-align: center;
-}
-
-#loader::before {
-    content: "";
-    display: block;
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 10px;
-    border: 4px solid #ffffff;
-    border-top: 4px solid #4caf50; /* Green color for animation */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-
-</style>
-
-<div id="form-container" style="margin: auto; margin-top: 70px; width: 750px;">
-    <h1>Send an Email</h1>
-    <form id="email-form" action="/mail" method="post">
-        <label for="to">To:</label>
-        <input type="text" id="to" name="to" required><br><br>
-        
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" name="subject" required><br><br>
-        
-        <label for="body">Body:</label>
-        <textarea id="body" name="body" required></textarea><br><br>
-
-        <label for="sendingDate">Sending Date</label>
-        <input type="datetime-local" id="sendingDate" name="sendingDate" required></input><br><br>
-        
-        <button type="submit">Send Email</button>
-    </form>
+                <button type="submit" class="btn btn-primary w-100">Send Email</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- AI Circle -->
 <div id="ai-circle" onclick="toggleAIBox()">AI</div>
 
 <!-- AI Prompt Box -->
-
-
-<div id="ai-box">
+<div id="ai-box" class="shadow-lg">
     <h2>Generate with AI</h2>
-    <form  onsubmit="handleFormSubmit(event)">
-        <label for="ai-topic">Topic or Keywords:</label>
-        <input type="text" id="ai-topic" name="topic"   placeholder="Enter topic or keywords"/>
-        <br>
-        <button type="submit">Generate</button>
+    <form onsubmit="handleFormSubmit(event)">
+        <div class="mb-3">
+            <label for="ai-topic" class="form-label">Topic or Keywords:</label>
+            <input type="text" id="ai-topic" name="topic" class="form-control" placeholder="Enter topic or keywords">
+        </div>
+        <button type="submit" class="btn btn-success w-100">Generate</button>
     </form>
-
-    <div class="genenerated">
-        <div id="loader" style="display: none;">Generating With AI ...</div>
-    <h3 id="generated-heading" style="font-size: 17px;"></h3>
-    <p id="generated-msg"> 
-         
-    </p>
+    <div class="generated">
+        <div id="loader">Generating With AI ...</div>
+        <h3 id="generated-heading" class="mt-3"></h3>
+        <p id="generated-msg"></p>
     </div>
 </div>
+
 
 <script src="js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

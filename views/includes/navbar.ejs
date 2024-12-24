@@ -1,54 +1,45 @@
-<nav class="navbar bg-primary navbar-expand-lg fixed-top" data-bs-theme="dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">MailPlanner</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/">MailPlanner</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/history">History</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/sendmail">Send Mail</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/pending">Pending Mail's</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/delivered">Delivered Mail's</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/failed">Failed Mail's</a>
-          </li>
-        </ul>
-        <span class="navbar-text">
-          <%if(currUserID){%>
-            <a href="/logout"  style="text-decoration: none; margin-right: 20px;">
-              <i class="fa-solid fa-person-walking-arrow-loop-left"></i>
-              Logout
-            </a>
-          <%}%>
-         
-          <%if(!currUserID){%>
-            <a href="/signup"  style="text-decoration: none; margin-right: 20px;">
-              <i class="fa-solid fa-user-plus"></i>
-              Sign Up
-          </a>
-
-          <a href="/login"  style="text-decoration: none; margin-right: 20px;">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Login
-          </a>
-          <%}%>
-        
-
-        <a href="/profile"  style="text-decoration: none; margin-right: 20px;">
-          <i class="fa-regular fa-user"></i>
-          Profile
-      </a>
-
-        </span>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link active" href="/history"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link active" href="/sendmail"><i class="fa-solid fa-paper-plane"></i> Send Mail</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/pending"><i class="fa-solid fa-envelope"></i> Pending Mails</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/delivered"><i class="fa-solid fa-check-circle"></i> Delivered Mails</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/failed"><i class="fa-solid fa-times-circle"></i> Failed Mails</a>
+              </li>
+          </ul>
+          <span class="navbar-text d-flex align-items-center">
+              <%if(currUserID){%>
+              <a href="/logout" class="btn btn-outline-light btn-sm me-2">
+                  <i class="fa-solid fa-person-walking-arrow-loop-left"></i> Logout
+              </a>
+              <%}%>
+              <%if(!currUserID){%>
+              <a href="/signup" class="btn btn-outline-light btn-sm me-2">
+                  <i class="fa-solid fa-user-plus"></i> Sign Up
+              </a>
+              <a href="/login" class="btn btn-outline-light btn-sm me-2">
+                  <i class="fa-solid fa-right-from-bracket"></i> Login
+              </a>
+              <%}%>
+              <a href="/profile" class="btn btn-outline-light btn-sm">
+                  <i class="fa-regular fa-user"></i> Profile
+              </a>
+          </span>
       </div>
-    </div>
-  </nav>
+  </div>
+</nav>
