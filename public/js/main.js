@@ -13,6 +13,7 @@ const handleFormSubmit = async (event) => {
     // Prevent the form from submitting and reloading the page
     event.preventDefault();
 
+    
     // Get the value of the 'topic' input field
     const topic = document.getElementById("ai-topic").value.trim();
 
@@ -22,17 +23,24 @@ const handleFormSubmit = async (event) => {
         return;
     }
 
+    const loader = document.getElementById("loader");
+    loader.style.display = "block";
+
     // Prepare the data to send in the request body
     const formData = { topic };
 
     try {
         // Send the POST request to the server's /generate-ai route
         const response = await axios.post("/generate-ai", formData);
-
+        
+        
+        
         // Check if the response status is 200 (successful)
         if (response.status === 200) {
-            const data = response.data; // Access the response data
+            loader.style.display = "none";
 
+            const data = response.data; // Access the response data
+             
             // Update the AI box UI with the generated content
             const aiBox = document.getElementById("ai-box");
             aiBox.style.width = "650px";
@@ -40,6 +48,7 @@ const handleFormSubmit = async (event) => {
             aiBox.style.height = "600px";
 
             const generateHeading = document.getElementById("generated-heading");
+            
             generateHeading.textContent = "Generated Content";
 
             const generatedMsgDiv = document.getElementById("generated-msg");

@@ -6,11 +6,9 @@
 <% for(let allmail of allmails){ %>
   <div class="card shadow-lg m-1" style="width: 22rem; border-radius: 20px;">
    <div class="card-body">
-    <% if( allmail.isSent) { %>
-      <p><b>Delivered</b> <i class="fa-solid fa-check"></i></p>
-  <% } else { %>
-      <p style="color: rgb(138, 138, 13);"><b>Pending</b> <i class="fa-solid fa-hourglass-start"></i></p>
-  <% } %>
+   
+      <p style="color: red;"><b>Failed</b> <i class="fa-solid fa-circle-exclamation"></i></i></p>
+ 
       <p class="card-text"><b>Subject : </b><%=allmail.Subject%></p>
       <p class="card-text"><b>From : </b><%=allmail.from%></p>
       <p class="card-text"><b>To : </b><%=allmail.to%></p>

@@ -177,13 +177,24 @@ app.post('/login', async (req, res) => {
 app.get('/profile',isLoggedIn,async (req, res) =>{
    let user =await User.findById(req.user.userid);
    let count=await Email.find({userID:user._id});
-   console.log(count);
-     res.render('user/profile',{user,count});
+   let pendingCount = await Email.countDocuments({
+    isSent: false,
+    userID: user._id
+  });
+
+   let deliveredCount = await Email.countDocuments({
+    isSent: true,
+    userID: user._id
+  });
+  console.log(deliveredCount);
+     res.render('user/profile',{user,count,pendingCount,deliveredCount});
 });
 
 app.get("/mail/edit/:id",async (req,res)=>{
-  let {id}=req.params.id;
-  let email= await Email.find(id);
+  let {id}=req.params;
+  console.log(id);
+  let email= await Email.findById(id);
+  console.log(email);
      res.render("email/edit.ejs",{email});
 });
 
@@ -260,14 +271,14 @@ const sendEmail = async (data, person) => {
     }
 
     // Send the email
-    await transporter.sendMail({
+    let confirm= await transporter.sendMail({
       from: person.email, // Sender address
       to: data.to,        // Recipient email
       subject: data.Subject, // Email subject
       text: data.message, // Email body content
     });
 
-    console.log(`Email sent successfully to ${data.to}`);
+    return confirm;
   } catch (error) {
     console.error(`Failed to send email: ${error.message}`);
   }
@@ -299,10 +310,15 @@ cron.schedule("* * * * *", async () => {
       }
 
       console.log(person, "Person sending the email");
-      await sendEmail(email, person); // Send the email
-
+      let check=await sendEmail(email, person); // Send the email
+       
       // Mark the email as sent
-      email.isSent = true;
+      if(check.accepted[0]){
+        email.isSent = true;
+      }else{
+        email.isSent=false
+        console.log(Failed);
+      }
       await email.save();
     }
   } catch (error) {
@@ -323,6 +339,19 @@ app.get('/history',isLoggedIn,async (req, res) => {
   let user=await User.findById(req.user.userid);
   const allmails = await Email.find({userID:user._id});
   res.render('email/History.ejs', { allmails });
+});
+
+app.get("/failed",isLoggedIn,async (req,res)=>{
+  let user=await User.findById(req.user.userid);
+  const currentDate = new Date(); // Get the current date and time
+  const allmails = await Email.find({
+    userID: user._id, 
+    isSent: false, 
+    sendingTime: { $lt: currentDate } // Check if sendingTime is less than the current date
+ });
+
+ res.render('email/failed.ejs', { allmails });
+  
 });
 
 // Save email and schedule sending
@@ -364,8 +393,12 @@ app.get('/mail/:id',isLoggedIn,async (req, res) => {
 // Show pending emails
 app.get('/pending', isLoggedIn,async (req, res) => {
   let user=await User.findById(req.user.userid);
-  const allmails = await Email.find({userID:user._id,isSent:false});
-  console.log(allmails);
+  const currentDate = new Date(); // Get the current date and time
+const allmails = await Email.find({
+    userID: user._id, 
+    isSent: false, 
+    sendingTime: { $gt: currentDate } // Check if sendingTime is less than the current date
+});
   res.render('email/pending.ejs', { allmails });
 });
 
