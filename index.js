@@ -12,10 +12,15 @@ const cookieParser = require('cookie-parser');
 const jwt=require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User=require('./models/user.js');
+const upload=require('./config/multerconfig.js');
+const flash =require('connect-flash');
+const session=require('express-session');
+const fs=require('fs');
 
 
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { Script } = require('vm');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -36,6 +41,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 //to read the data of the frontend 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+app.use(session({
+  secret:process.env.SECRET,
+  resave:false,
+  saveUninitialized:true,
+  cookie:{
+    expires: Date.now() + 7*24*60*60*1000,
+    maxAge:7*24*60*60*1000,
+    httpOnly: true,
+  }
+
+}));
+app.use(flash());
+
 
 
 //this is with JWT or we can use session for this  purpose
@@ -62,7 +82,12 @@ app.use((req, res, next) => {
   }
 });
 
-
+//res.locals for flash
+app.use((req,res,next)=>{
+  res.locals.successMsg=req.flash('success');
+  res.locals.errorMsg=req.flash('error');
+  next();
+})
 
 // Set EJS as view engine
 app.set('view engine', 'ejs');
@@ -84,6 +109,7 @@ app.post('/generate-ai', async (req, res) => {
       const response = await model.generateContent(topic +" only solve the question which contains the email only in 160 words with proper subject ,body don't give any answer not more than 160 words always less than or equal to it");
       // Sending the AI-generated content back to the client
       const generatedText = response.response.text();
+      req.flash('success', "Generated AI content");
       return res.status(200).json({ generatedText });
   } catch (error) {
       return res.status(500).json({ error: 'Internal server error' });
@@ -127,10 +153,12 @@ console.log(req.body);
 
       // Redirect to the login page after successful signup
       
+      req.flash("success","Registration successful");
       return res.redirect("/history");
     }
     // If email already exists, send an error message
-    res.status(400).json({ message: 'Email already exists' });
+    req.flash("error","Email already exists");
+    res.redirect("/login");
 
   } catch (err) {
     // Handle any errors (e.g., database issues, bcrypt errors)
@@ -146,8 +174,8 @@ app.get('/login',(req, res) => {
 
 app.post('/login', async (req, res) => {
   let {email,pass}=req.body;
-    let user=await User.findOne({ 'credentials.email': email });
-    
+    let user=await User.findOne({ email: email });
+
     
     if(user){
          bcrypt.compare(pass,user.accountPassword, function(err, result) {
@@ -158,16 +186,15 @@ app.post('/login', async (req, res) => {
                     httpOnly: true,       // Protect cookie from being accessed by client-side scripts
                     maxAge: 7 * 24 * 60 * 60 * 1000 // Cookie expires in 7 days
                 });
-                
+                  req.flash("success","Logged in successfully");
                    return res.redirect("/history");
                 }
                 else{
-                  
+                  req.flash("error","Incorrect Password or Email");
                  res.redirect("/login");
                 }
              });
     }else{
-     
        res.redirect("/signup");
     }
 });
@@ -217,7 +244,7 @@ app.put("/mail/edit/:id",async (req,res)=>{
   }
   email=Object.assign(email,data);//to update the value 
   await email.save();
-    
+  req.flash("success","Email updated successfully");
   res.redirect(`/mail/${id}`);
   });
 
@@ -239,11 +266,22 @@ app.put("/mail/edit/:id",async (req,res)=>{
       await Email.findByIdAndDelete(id);
   
       // Redirect to history page
+      req.flash("error", "Email deleted successfully");
       res.redirect("/history");
     } catch (error) {
       console.error("Error deleting email:", error.message);
+      req.flash("error", "Error deleting email");
       res.status(500).send("An error occurred while deleting the email");
     }
+  });
+
+
+  app.post('/upload',isLoggedIn,upload.single('file'),async(req,res)=>{
+  console.log(req.file);
+  let user=await User.findById(req.user.userid);
+  user.profilepic=req.file.filename;
+  await user.save();
+  res.redirect('/profile');
   });
   
 // Email transporter setup
@@ -283,6 +321,8 @@ const sendEmail = async (data, person) => {
     console.error(`Failed to send email: ${error.message}`);
   }
 };
+
+
 
 // Cron job to check and send unsent emails every minute
 cron.schedule("* * * * *", async () => {
@@ -355,31 +395,57 @@ app.get("/failed",isLoggedIn,async (req,res)=>{
 });
 
 // Save email and schedule sending
-app.post('/mail', isLoggedIn, async (req, res) => {
+app.post('/mail', isLoggedIn,upload.single('csvfile'),async (req, res) => {
   const { to, subject, body, sendingDate } = req.body;
- let person=await User.findById(req.user.userid);
- console.log(person);
-  const data = {
+  console.log(req.file);
+ 
+
+  let person=await User.findById(req.user.userid);
+if(!to){
+  const filePath = req.file.path;
+  fs.readFile(filePath, 'utf8', async (err, info) => {
+    if (err) {
+        console.error('Error reading file:', err.message);
+        return;
+    }
+    
+    const data = {
+      userID:person._id,
+       user:person.user,
+      from:person.email,
+      to: info,
+      Subject: subject,
+      message: body,
+      sendingTime: sendingDate
+    };
+  
+     // Save data to database
+  let result=await Email.create(data);
+  person.sendmailID.push(result._id);
+  person.save();
+  
+    // Schedule the email to be sent at the specified time
+    const scheduledDate = new Date(sendingDate);
+     schedule.scheduleJob(scheduledDate, async () => {
+     await sendEmail(data,person);
+    });
+    
+});
+}else{
+  let data={
     userID:person._id,
-     user:person.user,
+    user:person.user,
     from:person.email,
     to: to,
     Subject: subject,
     message: body,
     sendingTime: sendingDate
-  };
-
-
-  // Save data to database
+  }
   let result=await Email.create(data);
-person.sendmailID.push(result._id);
-person.save();
-
-  // Schedule the email to be sent at the specified time
-  const scheduledDate = new Date(sendingDate);
-   schedule.scheduleJob(scheduledDate, async () => {
-   await sendEmail(data,person);
-  });
+  person.sendmailID.push(result._id);
+  person.save();
+}
+req.flash('success',"Email Scheduled successfully");
   res.redirect('/history');
 });
 
@@ -419,6 +485,7 @@ app.get("/logout", (req, res) => {
       sameSite: 'strict', // Prevent CSRF attacks
       expires: new Date(0) // Immediately expire the cookie
   });
+  req.flash('error',"You have been logged out");
   res.redirect('/login'); // Redirect to login page
 });
 

@@ -1,19 +1,27 @@
 <%layout("/layout/boilerplate")%>
 
 <link rel="stylesheet" href="css/send.css">
-<h1>send</h1>
+
 <div id="form-container" class="container mt-5">
     <div class="card shadow-lg mx-auto" style="max-width: 900px;">
         <div class="card-header bg-primary text-white text-center">
             <h1 class="h4 mb-0">Send an Email</h1>
         </div>
         <div class="card-body">
-            <form id="email-form" action="/mail" method="post">
+            <form id="email-form" action="/mail" method="post" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="to" class="form-label">To:</label>
-                        <input type="email" id="to" name="to" class="form-control" required placeholder="Enter recipient's email">
+                        <input type="email" id="to" name="to" class="form-control"  placeholder="Enter recipient's email">
                     </div>
+                    
+                    <div class="col-md-6">
+                        <label for="csvfile" class="form-label">Attach CSV File (optional):</label>
+                        <div class="input-group">
+                            <input type="file" id="csvfile" name="csvfile" class="form-control">
+                        </div>
+                    </div>
+                    <br>
                     <div class="col-md-6">
                         <label for="subject" class="form-label">Subject:</label>
                         <input type="text" id="subject" name="subject" class="form-control" required placeholder="Enter email subject">

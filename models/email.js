@@ -32,7 +32,7 @@ const emailSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], // Validates email format
+       // match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], // Validates email format
     },
     Subject: {
         type: String,
