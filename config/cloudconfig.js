@@ -8,14 +8,7 @@ cloudinary.config({
 });
 
 
- 
-// const storage = new CloudinaryStorage({
-//     cloudinary: cloudinary,
-//     params: {
-//       folder: 'Mailplanner',
-//       allowedFormats:["png", "jpg", "jpeg","csv"],
-//     },
-//   });
+
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
