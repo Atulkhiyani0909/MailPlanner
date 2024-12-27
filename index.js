@@ -520,6 +520,7 @@ app.post('/sendmail',isLoggedIn,upload.single('csv-file'),async (req, res) => {
             to: emailList, // You can process the CSV content here if needed
             Subject: subject,
             message: body,
+            currentTime: new Date(),
             sendingTime: sendingDate,
             fileLink: fileUrl 
         };
