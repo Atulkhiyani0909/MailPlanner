@@ -31,6 +31,22 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 
+const dburl=process.env.ATLASDB_URL;
+
+//MongoSession to store the data in online server
+
+const store=MongoStore.create({
+  mongoUrl:dburl,
+  crypto:{
+    secret:process.env.SECRET,
+  },
+  touchAfter:24*3600,
+});
+
+store.on("error",()=>{
+  console.log("Error in MongoSEssion Store ",err);
+})
+
 const app = express();
 let port = 3000;
 
@@ -48,17 +64,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use(session({
+const sessionOptions={
+  store,
   secret:process.env.SECRET,
   resave:false,
-  saveUninitialized:true,
+  saveUnintialized:true,
   cookie:{
-    expires: Date.now() + 7*24*60*60*1000,
+    expires:Date.now()+7*24*60*60*1000,//in millisecond this is about seven days
     maxAge:7*24*60*60*1000,
-    httpOnly: true,
+    httpOnly:true,//to save from the cross scripting attack
   }
-
-}));
+}
 app.use(flash());
 
 
