@@ -192,7 +192,7 @@ app.post('/login', async (req, res) => {
                     maxAge: 7 * 24 * 60 * 60 * 1000 // Cookie expires in 7 days
                 });
                   req.flash("success","Logged in successfully");
-                   return res.redirect("/history");
+                   return res.redirect("/profile");
                 }
                 else{
                   req.flash("error","Incorrect Password or Email");
