@@ -1,16 +1,5 @@
 const mongoose=require("mongoose");
 
-// Connect to MongoDB
-main().then(() => {
-  console.log('Connection Success');
-}).catch((err) => {
-  console.log('Error Occurred:', err);
-});
-
-async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/email-connect');
-}
-
 
 const emailSchema = new mongoose.Schema({
     userID:{

@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const MongoStore = require('connect-mongo');
 const express = require('express');
 const nodemailer = require('nodemailer');
 const Email = require('./models/email.js'); // Your Mongoose email schema
@@ -20,12 +21,14 @@ const multer=require('multer');
 const {storage}=require('./config/cloudconfig.js');
 const {cloudinary}=require('./config/cloudconfig.js');
 const axios = require('axios');
+const mongoose = require('mongoose');
 
 const upload=multer({storage});
 
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { Script } = require('vm');
+const { mainModule } = require('process');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -33,6 +36,20 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const dburl=process.env.ATLASDB_URL;
 
+main()
+.then(() => {
+  console.log('Connected to MongoDB');
+}
+)
+.catch((err) => {
+  console.log('Error connecting to MongoDB:', err);
+}
+);
+
+
+async function main() {
+  await mongoose.connect(dburl);
+}
 //MongoSession to store the data in online server
 
 const store=MongoStore.create({
@@ -75,6 +92,7 @@ const sessionOptions={
     httpOnly:true,//to save from the cross scripting attack
   }
 }
+app.use(session(sessionOptions));
 app.use(flash());
 
 
