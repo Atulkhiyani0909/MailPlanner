@@ -19,6 +19,7 @@ const fs=require('fs');
 const multer=require('multer');
 const {storage}=require('./config/cloudconfig.js');
 const {cloudinary}=require('./config/cloudconfig.js');
+const axios = require('axios');
 
 const upload=multer({storage});
 
@@ -82,7 +83,7 @@ app.use((req, res, next) => {
     // Clear `res.locals` to ensure no unauthorized data is stored
     res.locals.currUserID = null;
 
-    next(); // Allow the request to proceed, but without authenticated user data
+    res.status(401).render('includes/error', { error: 'Unauthorized access' });
   }
 });
 
@@ -229,10 +230,58 @@ app.get("/mail/edit/:id",async (req,res)=>{
      res.render("email/edit.ejs",{email});
 });
 
-app.put("/mail/edit/:id",async (req,res)=>{
+app.put("/mail/edit/:id",isLoggedIn,upload.single('csv-file'),async (req,res)=>{
   let {id}=req.params;
   let {to,subject,body,newsendingDate}=req.body;
   let email=await Email.findById(id);
+
+  // console.log(req.file);
+  // res.send(req.body);
+  if (req.file) {
+    console.log(req.file);
+    const fileUrl = req.file.path; // Cloudinary URL to the uploaded file
+    console.log('File URL:', fileUrl);
+
+    try {
+        // Fetch the file content from Cloudinary (assuming the file is text-based like CSV)
+        const response = await axios.get(fileUrl, { responseType: 'text' });
+        const info = response.data; // The file content as a string
+       
+        const emailList = info
+        .split(/\s+/) // Split by any whitespace (spaces, newlines, etc.)
+        .filter(email => email) // Remove any empty elements
+        .join(','); // Join with commas
+
+    console.log(emailList);
+
+    if(newsendingDate){
+      sendingDate=newsendingDate;
+    }else{
+      sendingDate=email.sendingTime;
+    }
+  
+
+        const data = {
+          to:emailList,
+          Subject:subject,
+          message:body,
+          sendingTime:sendingDate,
+          fileLink: fileUrl
+        };
+
+        // Save data to database
+        email=Object.assign(email,data);//to update the value 
+  await email.save();
+  req.flash("success","Email updated successfully");
+  res.redirect(`/mail/${id}`);
+       
+    } catch (err) {
+        console.error('Error processing file from Cloudinary:', err.message);
+        req.flash("error","Error processing file from Cloudinary");
+        res.status(500).render('includes/error', { error: 'Internal Server Error' });
+    }
+   
+}else{
   
   if(newsendingDate){
     sendingDate=newsendingDate;
@@ -250,6 +299,7 @@ app.put("/mail/edit/:id",async (req,res)=>{
   await email.save();
   req.flash("success","Email updated successfully");
   res.redirect(`/mail/${id}`);
+}
   });
 
 
@@ -275,13 +325,12 @@ app.put("/mail/edit/:id",async (req,res)=>{
     } catch (error) {
       console.error("Error deleting email:", error.message);
       req.flash("error", "Error deleting email");
-      res.status(500).send("An error occurred while deleting the email");
+      res.status(500).render('includes/error', { error: 'Internal Server Error' });
     }
   });
 
 
   app.post('/upload',isLoggedIn,upload.single('file'),async(req,res)=>{
-  console.log(req.file);
   let user=await User.findById(req.user.userid);
   user.profilepic=req.file.path;
   await user.save();
@@ -309,7 +358,7 @@ const sendEmail = async (data, person) => {
 
     // Ensure required email properties are provided
     if (!data.to || !data.Subject || !data.message) {
-      throw new Error("Missing required email fields: 'to', 'Subject', or 'message'");
+      res.status(500).render('includes/error', { error: 'Internal Server Error' });
     }
 
     // Send the email
@@ -322,7 +371,7 @@ const sendEmail = async (data, person) => {
 
     return confirm;
   } catch (error) {
-    console.error(`Failed to send email: ${error.message}`);
+    res.status(500).render('includes/error', { error: 'Internal Server Error mail not sent' });
   }
 };
 
@@ -375,7 +424,13 @@ app.get('/',(req, res) => {
   res.render('index');
 });
 app.get('/sendmail',isLoggedIn,async (req, res) => {
-  res.render('email/sendmail.ejs');
+  try{
+    res.render('email/sendmail.ejs');
+
+  }catch(err){
+    res.status(500).render('includes/error', { error: 'Internal Server Error' });
+  }
+  
 });
 
 // Show email history
@@ -398,60 +453,74 @@ app.get("/failed",isLoggedIn,async (req,res)=>{
   
 });
 
-// Save email and schedule sending
-app.post('/mail', isLoggedIn,upload.single('csvfile'),async (req, res) => {
-  const { to, subject, body, sendingDate } = req.body;
-//  res.send(req.file,req.body);
-res.send(req.body);
- 
 
-//   let person=await User.findById(req.user.userid);
-// if(!to){
-//   const filePath = req.file.path;
-//   fs.readFile(filePath, 'utf8', async (err, info) => {
-//     if (err) {
-//         console.error('Error reading file:', err.message);
-//         return;
-//     }
-    
-//     const data = {
-//       userID:person._id,
-//        user:person.user,
-//       from:person.email,
-//       to: info,
-//       Subject: subject,
-//       message: body,
-//       sendingTime: sendingDate
-//     };
+
+// Save email and schedule sending
+
+app.post('/sendmail',isLoggedIn,upload.single('csv-file'),async (req, res) => {
+  const { to, subject, body, sendingDate } = req.body;
   
-//      // Save data to database
-//   let result=await Email.create(data);
-//   person.sendmailID.push(result._id);
-//   person.save();
   
-//     // Schedule the email to be sent at the specified time
-//     const scheduledDate = new Date(sendingDate);
-//      schedule.scheduleJob(scheduledDate, async () => {
-//      await sendEmail(data,person);
-//     });
-    
-// });
-// }else{
-//   let data={
-//     userID:person._id,
-//     user:person.user,
-//     from:person.email,
-//     to: to,
-//     Subject: subject,
-//     message: body,
-//     sendingTime: sendingDate
-//   }
-//   let result=await Email.create(data);
-//   person.sendmailID.push(result._id);
-//   person.save();
-// }
-// req.flash('success',"Email Scheduled successfully");
-//   res.redirect('/history');
+  
+  let person=await User.findById(req.user.userid);
+  if (!to) {
+    const fileUrl = req.file.path; // Cloudinary URL to the uploaded file
+    console.log('File URL:', fileUrl);
+
+    try {
+        // Fetch the file content from Cloudinary (assuming the file is text-based like CSV)
+        const response = await axios.get(fileUrl, { responseType: 'text' });
+        const info = response.data; // The file content as a string
+       
+        const emailList = info
+        .split(/\s+/) // Split by any whitespace (spaces, newlines, etc.)
+        .filter(email => email) // Remove any empty elements
+        .join(','); // Join with commas
+
+    console.log(emailList);
+
+        const data = {
+            userID: person._id,
+            user: person.user,
+            from: person.email,
+            to: emailList, // You can process the CSV content here if needed
+            Subject: subject,
+            message: body,
+            sendingTime: sendingDate,
+            fileLink: fileUrl 
+        };
+
+        // Save data to database
+        let result = await Email.create(data);
+        person.sendmailID.push(result._id);
+        await person.save();
+
+        // Schedule the email to be sent at the specified time
+        const scheduledDate = new Date(sendingDate);
+        schedule.scheduleJob(scheduledDate, async () => {
+            await sendEmail(data, person);
+        });
+
+        console.log('Email data saved and scheduled successfully.');
+    } catch (err) {
+      res.status(500).render('includes/error', { error: 'Internal Server Error' });
+    }
+}else{
+  let data={
+    userID:person._id,
+    user:person.user,
+    from:person.email,
+    to: to,
+    Subject: subject,
+    message: body,
+    sendingTime: sendingDate
+  }
+  let result=await Email.create(data);
+  person.sendmailID.push(result._id);
+  person.save();
+}
+req.flash('success',"Email Scheduled successfully");
+  res.redirect('/history');
 });
 
 // Show individual email details

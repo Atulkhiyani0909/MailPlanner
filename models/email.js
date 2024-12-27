@@ -59,6 +59,10 @@ const emailSchema = new mongoose.Schema({
         type: Boolean,
         default: false, // Initially set to false when not sent
     },
+    fileLink: {
+        type: String,
+        required: false, // Not mandatory
+    },
 });
 
 module.exports = mongoose.model('Email', emailSchema);

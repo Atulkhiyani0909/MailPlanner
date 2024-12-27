@@ -9,13 +9,26 @@ cloudinary.config({
 
 
  
+// const storage = new CloudinaryStorage({
+//     cloudinary: cloudinary,
+//     params: {
+//       folder: 'Mailplanner',
+//       allowedFormats:["png", "jpg", "jpeg","csv"],
+//     },
+//   });
+
 const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'Mailplanner',
-      allowedFormats:["png", "jpg", "jpeg","csv"],
-    },
-  });
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+      const isCSV = file.mimetype === 'text/csv'; // Check if the file is a CSV
+      return {
+          folder: 'Mailplanner',
+          resource_type: isCSV ? 'raw' : 'image', // Use 'raw' for CSV and 'image' for others
+          allowedFormats: isCSV ? ['csv'] : ['png', 'jpg', 'jpeg'], // Conditional formats
+      };
+  },
+});
+
    
 
   module.exports ={

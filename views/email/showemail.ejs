@@ -42,6 +42,7 @@
         }
 
         .email-info {
+            overflow-wrap: break-word;
             width: 100%;
             padding-bottom: 15px;
         }
@@ -125,6 +126,11 @@
                 <p><strong>Subject:</strong> <%=mail.Subject%></p>
                 <p><%=mail.message%></p>
             </div>
+            <%if(mail.fileLink){%>
+            <div class="email-body">
+                <p><strong>Attachment : </strong> <a href="<%=mail.fileLink%>">Download Attachment</a></p>
+            </div>
+            <%}%>
 
             <div class="email-actions">
                 <%if(mail.isSent){%>

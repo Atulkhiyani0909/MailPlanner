@@ -14,7 +14,7 @@
   <% } %>
       <p class="card-text"><b>Subject : </b><%=allmail.Subject%></p>
       <p class="card-text"><b>From : </b><%=allmail.from%></p>
-      <p class="card-text"><b>To : </b><%=allmail.to%></p>
+      <p class="card-text"><b>To : </b><%=allmail.to.toString().substring(0,24)%>.....</p>
       <p class="card-text"><b>Date Created : </b><%=allmail.dateCreated.toString().substring(0,24)%></p>
       <p class="card-text"><b>Sending Time : </b><%=allmail.sendingTime.toString().substring(0,24)%></p>
     </div>

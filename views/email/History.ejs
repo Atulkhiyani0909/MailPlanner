@@ -12,7 +12,7 @@
       <p class="card-text"><b>Subject : </b><%=allmail.Subject%></p>
     </div>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item"><b>To : </b><%=allmail.to%></li>
+      <li class="list-group-item"><b>To : </b><%=allmail.to.toString().substring(0,24)%>.......</li>
       <li class="list-group-item"><b>Date Send : </b><%=allmail.dateCreated.toString().substring(0,24)%></li>
       <li class="list-group-item"><b>Sending Time : </b><%=allmail.sendingTime.toString().substring(0,24)%> </li>
     </ul>
