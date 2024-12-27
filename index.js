@@ -12,11 +12,15 @@ const cookieParser = require('cookie-parser');
 const jwt=require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User=require('./models/user.js');
-const upload=require('./config/multerconfig.js');
+//const upload=require('./config/multerconfig.js');
 const flash =require('connect-flash');
 const session=require('express-session');
 const fs=require('fs');
+const multer=require('multer');
+const {storage}=require('./config/cloudconfig.js');
+const {cloudinary}=require('./config/cloudconfig.js');
 
+const upload=multer({storage});
 
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
@@ -279,7 +283,7 @@ app.put("/mail/edit/:id",async (req,res)=>{
   app.post('/upload',isLoggedIn,upload.single('file'),async(req,res)=>{
   console.log(req.file);
   let user=await User.findById(req.user.userid);
-  user.profilepic=req.file.filename;
+  user.profilepic=req.file.path;
   await user.save();
   res.redirect('/profile');
   });
@@ -397,56 +401,57 @@ app.get("/failed",isLoggedIn,async (req,res)=>{
 // Save email and schedule sending
 app.post('/mail', isLoggedIn,upload.single('csvfile'),async (req, res) => {
   const { to, subject, body, sendingDate } = req.body;
-  console.log(req.file);
+//  res.send(req.file,req.body);
+res.send(req.body);
  
 
-  let person=await User.findById(req.user.userid);
-if(!to){
-  const filePath = req.file.path;
-  fs.readFile(filePath, 'utf8', async (err, info) => {
-    if (err) {
-        console.error('Error reading file:', err.message);
-        return;
-    }
+//   let person=await User.findById(req.user.userid);
+// if(!to){
+//   const filePath = req.file.path;
+//   fs.readFile(filePath, 'utf8', async (err, info) => {
+//     if (err) {
+//         console.error('Error reading file:', err.message);
+//         return;
+//     }
     
-    const data = {
-      userID:person._id,
-       user:person.user,
-      from:person.email,
-      to: info,
-      Subject: subject,
-      message: body,
-      sendingTime: sendingDate
-    };
+//     const data = {
+//       userID:person._id,
+//        user:person.user,
+//       from:person.email,
+//       to: info,
+//       Subject: subject,
+//       message: body,
+//       sendingTime: sendingDate
+//     };
   
-     // Save data to database
-  let result=await Email.create(data);
-  person.sendmailID.push(result._id);
-  person.save();
+//      // Save data to database
+//   let result=await Email.create(data);
+//   person.sendmailID.push(result._id);
+//   person.save();
   
-    // Schedule the email to be sent at the specified time
-    const scheduledDate = new Date(sendingDate);
-     schedule.scheduleJob(scheduledDate, async () => {
-     await sendEmail(data,person);
-    });
+//     // Schedule the email to be sent at the specified time
+//     const scheduledDate = new Date(sendingDate);
+//      schedule.scheduleJob(scheduledDate, async () => {
+//      await sendEmail(data,person);
+//     });
     
-});
-}else{
-  let data={
-    userID:person._id,
-    user:person.user,
-    from:person.email,
-    to: to,
-    Subject: subject,
-    message: body,
-    sendingTime: sendingDate
-  }
-  let result=await Email.create(data);
-  person.sendmailID.push(result._id);
-  person.save();
-}
-req.flash('success',"Email Scheduled successfully");
-  res.redirect('/history');
+// });
+// }else{
+//   let data={
+//     userID:person._id,
+//     user:person.user,
+//     from:person.email,
+//     to: to,
+//     Subject: subject,
+//     message: body,
+//     sendingTime: sendingDate
+//   }
+//   let result=await Email.create(data);
+//   person.sendmailID.push(result._id);
+//   person.save();
+// }
+// req.flash('success',"Email Scheduled successfully");
+//   res.redirect('/history');
 });
 
 // Show individual email details
