@@ -93,7 +93,7 @@
         <input type="text" id="subject" name="subject" required value="<%=email.Subject%>">
         
         <label for="body">Message Body:</label>
-        <textarea id="body" name="body" required></textarea>
+        <textarea id="body" name="body" required value="<%=email.Subject%>"></textarea>
         
         <label for="previousDate">Previous Date:</label>
         <input type="text"  value="<%= email.sendingTime.toString().substring(0, 24) %>" disabled id="previousDate" readonly value="<%=email.sendingTime.toString().substring(0,24)%>">
@@ -101,7 +101,7 @@
         <label for="newsendingDate">New Sending Date:</label>
         <input type="datetime-local" id="newsendingDate" name="newsendingDate"  style="background-color: #f9f9f9; color: gray;">
 
-        <button type="submit">Send Email</button>
+        <button type="submit">Update Email</button>
     </form>
 </div>
 
