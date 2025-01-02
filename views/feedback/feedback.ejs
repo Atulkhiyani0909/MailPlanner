@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1151a5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: scale(1.02);
+        }
+        h2 {
+            text-align: center;
+            color: #2575fc;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Button Styles */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #1e62b7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>We Value Your Feedback!</h2>
+        <form action="/feedback" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your full name">
+            </div>
+            
+            <div class="form-group">
+                <label for="feedback">Your Feedback:</label>
+                <textarea id="feedback" name="feedback" rows="5" required placeholder="Let us know what you think..."></textarea>
+            </div>
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </div>
+</body>
+</html>

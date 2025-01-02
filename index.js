@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const jwt=require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User=require('./models/user.js');
+const UserFeedback=require('./models/feedback.js');
 //const upload=require('./config/multerconfig.js');
 const flash =require('connect-flash');
 const session=require('express-session');
@@ -599,6 +600,24 @@ app.get("/logout", (req, res) => {
 });
 
 
+app.get('/feedback',isLoggedIn,async (req, res) => {
+  res.render('feedback/feedback.ejs');
+});
+
+app.post('/feedback',isLoggedIn,async (req, res) => {
+  let {name,feedback}=req.body;
+  let user=await User.findById(req.user.userid);
+  let data=await UserFeedback.create({
+    userID:user._id,
+    user:name,
+    email:user.email,
+    feedback:feedback,
+  });
+
+
+  req.flash('success',"Feedback submitted successfully");
+  res.redirect('/profile');
+});
 
 
 
