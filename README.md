@@ -14,8 +14,6 @@ But wait—there’s more! 🤖 You can even **ask AI** to generate your emails 
 
 - **Automated Sending**: Use cron jobs to automatically send emails on your behalf at the right moment. ⏰✨
 
-- **Email Templates**: Reuse and customize beautiful email templates to make each campaign a breeze. 🎨📝
-
 - **AI Email Generator**: Feeling stuck? Let AI generate personalized emails for you! Just provide a few details, and the AI will craft a message that suits your needs. 🧠💌
 
 ## 💻 **Technologies Used**
@@ -57,8 +55,7 @@ Make sure you have the following installed:
    git clone https://github.com/Atulkhiyani0909/MailPlanner.git
 
 
-
-   🌍 Live Demo
+🌍 Live Demo
 Want to see it in action? Check out the live demo! 🖥️
 
 🌐 https://mailplanner.onrender.com/ 🎉
@@ -75,11 +72,9 @@ Real-Time Tracking: Stay informed about how your campaigns are performing with r
 Customizable Templates: Save time by creating reusable templates that can be used across campaigns.
 Bulk Sending Made Easy: No more sending individual emails—reach your audience quickly!
 AI-Powered Email Creation: Skip writer’s block! Let AI create perfectly crafted emails for any situation. ✍️🤖
-
-
+🗣 Feedback 📣
+We’d love to hear your feedback! If you have any suggestions, questions, or issues, feel free to submit your feedback directly through the website. Just visit the Feedback section in the app, and we’ll be happy to hear from you! 💬
 
 Thank you for using the Email Scheduling and Tracking System! 🎉 If you have any feedback or run into issues, feel free to open an issue or contribute to the repo! 🚀
 
 Stay productive, stay organized, and happy emailing! 📧💥
-
-
