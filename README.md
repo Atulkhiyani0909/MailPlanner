@@ -60,7 +60,7 @@ Want to see it in action? Check out the live demo! 🖥️
 
 🌐 https://mailplanner.onrender.com/ 🎉
 
-📧 How It Works - The Simple Process
+### **📧 How It Works - The Simple Process**
 Add Contacts: Upload a CSV file with email addresses or manually add contacts. 🎯
 Create Email Templates: Craft stunning email templates, or pick a pre-made one to speed things up. ✨
 Schedule Emails: Pick a date and time, and set it to send—no need to manually press "send" again! 🕐
@@ -72,7 +72,9 @@ Real-Time Tracking: Stay informed about how your campaigns are performing with r
 Customizable Templates: Save time by creating reusable templates that can be used across campaigns.
 Bulk Sending Made Easy: No more sending individual emails—reach your audience quickly!
 AI-Powered Email Creation: Skip writer’s block! Let AI create perfectly crafted emails for any situation. ✍️🤖
-🗣 Feedback 📣
+
+
+### ** 🗣 Feedback 📣**
 We’d love to hear your feedback! If you have any suggestions, questions, or issues, feel free to submit your feedback directly through the website. Just visit the Feedback section in the app, and we’ll be happy to hear from you! 💬
 
 Thank you for using the Email Scheduling and Tracking System! 🎉 If you have any feedback or run into issues, feel free to open an issue or contribute to the repo! 🚀
